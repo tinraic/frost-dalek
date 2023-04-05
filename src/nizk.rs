@@ -85,4 +85,9 @@ impl NizkOfSecretKey {
 
         Err(())
     }
+
+    /// Unpack parts of the signature for serialization purposes
+    pub fn unpack(&self) -> (Scalar, Scalar) {
+        (self.s, self.r)
+    }
 }
