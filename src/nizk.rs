@@ -19,6 +19,8 @@ use rand::Rng;
 use sha2::Digest;
 use sha2::Sha512;
 
+use std::vec::Vec;
+
 /// A proof of knowledge of a secret key, created by making a Schnorr signature
 /// with the secret key.
 ///
@@ -36,9 +38,9 @@ use sha2::Sha512;
 #[derive(Clone, Debug)]
 pub struct NizkOfSecretKey {
     /// The scalar portion of the Schnorr signature encoding the context.
-    s: Scalar,
+    pub(crate) s: Scalar,
     /// The scalar portion of the Schnorr signature which is the actual signature.
-    r: Scalar,
+    pub(crate) r: Scalar,
 }
 
 impl NizkOfSecretKey {
@@ -89,5 +91,20 @@ impl NizkOfSecretKey {
     /// Unpack parts of the signature for serialization purposes
     pub fn unpack(&self) -> (Scalar, Scalar) {
         (self.s, self.r)
+    }
+}
+
+impl From<Vec<Scalar>> for NizkOfSecretKey {
+    fn from(scalars: Vec<Scalar>) -> Self {
+        let (s, r): (Scalar, Scalar);
+        if scalars.len() != 2 {
+            s = Scalar::from_bytes_mod_order([0u8; 32]);
+            r = Scalar::from_bytes_mod_order([0u8; 32]);
+        } else {
+            s = scalars[0];
+            r = scalars[1];
+        }
+        
+        NizkOfSecretKey { s: s, r: r }
     }
 }
