@@ -188,6 +188,11 @@ use rand::rngs::OsRng;
 
 use zeroize::Zeroize;
 
+use serde::{
+    Serialize,
+    Deserialize,
+};
+
 use crate::nizk::NizkOfSecretKey;
 use crate::parameters::Parameters;
 
@@ -567,7 +572,7 @@ impl DistributedKeyGeneration<RoundOne> {
 
 /// A secret share calculated by evaluating a polynomial with secret
 /// coefficients for some indeterminant.
-#[derive(Clone, Debug, Zeroize)]
+#[derive(Clone, Debug, Zeroize, Serialize, Deserialize)]
 #[zeroize(drop)]
 pub struct SecretShare {
     /// The participant index that this secret share was calculated for.
@@ -755,7 +760,7 @@ impl From<&SecretKey> for IndividualPublicKey {
 }
 
 /// A public key, used to verify a signature made by a threshold of a group of participants.
-#[derive(Clone, Copy, Debug, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Serialize, Deserialize)]
 pub struct GroupKey(pub(crate) RistrettoPoint);
 
 impl PartialEq for GroupKey {
