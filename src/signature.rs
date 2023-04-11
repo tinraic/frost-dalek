@@ -38,11 +38,13 @@ use crate::precomputation::SecretCommitmentShareList;
 
 pub use crate::keygen::SecretKey;
 
+use serde::{Serialize, Deserialize};
+
 // XXX Nonce reuse is catastrophic and results in obtaining an individual
 //     signer's long-term secret key; it must be prevented at all costs.
 
 /// An individual signer in the threshold signature scheme.
-#[derive(Clone, Copy, Debug, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Serialize, Deserialize)]
 pub struct Signer {
     /// The participant index of this signer.
     pub participant_index: u32,
@@ -76,7 +78,7 @@ impl PartialEq for Signer {
 
 /// A partially-constructed threshold signature, made by each participant in the
 /// signing protocol during the first phase of a signature creation.
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct PartialThresholdSignature {
     pub(crate) index: u32,
     pub(crate) z: Scalar,

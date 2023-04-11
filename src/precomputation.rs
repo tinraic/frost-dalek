@@ -28,6 +28,8 @@ use subtle::ConstantTimeEq;
 
 use zeroize::Zeroize;
 
+use serde::{Serialize, Deserialize};
+
 #[derive(Debug, Zeroize)]
 #[zeroize(drop)]
 pub(crate) struct NoncePair(pub(crate) Scalar, pub(crate) Scalar);
@@ -127,7 +129,7 @@ pub struct SecretCommitmentShareList {
 ///
 /// This should be published somewhere before the signing protocol takes place
 /// for the other signing participants to obtain.
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct PublicCommitmentShareList {
     /// The participant's index.
     pub participant_index: u32,
