@@ -178,6 +178,12 @@ use alloc::boxed::Box;
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 
+#[cfg(feature = "std")]
+use std::default::Default;
+
+#[cfg(feature = "std")]
+use std::iter;
+
 use curve25519_dalek::constants::RISTRETTO_BASEPOINT_TABLE;
 use curve25519_dalek::ristretto::CompressedRistretto;
 use curve25519_dalek::ristretto::RistrettoPoint;
@@ -678,6 +684,32 @@ impl DistributedKeyGeneration<RoundTwo> {
 
         Ok(GroupKey(keys.iter().sum()))
     }
+
+    /// Calculate the long-lived threshold public key of participant
+    /// `index`, given the commitments of this participant
+    /// Taken from Robert Junge's Thesis Tamper-resistant Signature Services Based on Elliptic Curve Schnorr Threshold Signing
+    pub fn calculate_other_verification_share(&self, index: &u32, myself: &Participant) -> IndividualPublicKey {
+        let other_index: Scalar = (*index).into();
+        let mut partial_pubkey: RistrettoPoint = RistrettoPoint::identity();
+        for (_j, commitments) in 
+            self.state.their_commitments.iter()
+            .map(|(i, c)| (i, &c.0))
+            .chain(iter::once((&myself.index, &myself.commitments))) {
+            let mut rhs: RistrettoPoint = RistrettoPoint::identity();
+        
+            // Commitments are already sorted by definition
+            for (rev_k, rev_phi_k) in commitments.iter().rev().enumerate() {
+                rhs += rev_phi_k;
+                if rev_k != (commitments.len() - 1) { // 1st commitment is at k=0
+                    rhs *= other_index;
+                }
+            }
+            
+            partial_pubkey += rhs;
+        }
+
+        IndividualPublicKey {index: *index, share: partial_pubkey}
+    }
 }
 
 /// A public verification share for a participant.
@@ -732,7 +764,7 @@ impl IndividualPublicKey {
 }
 
 /// A secret key, used by one participant in a threshold signature scheme, to sign a message.
-#[derive(Debug, Zeroize)]
+#[derive(Debug, Zeroize, Default)]
 #[zeroize(drop)]
 pub struct SecretKey {
     /// The participant index to which this key belongs.
