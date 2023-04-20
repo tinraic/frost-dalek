@@ -22,6 +22,9 @@ use std::collections::hash_map::Values;
 use std::cmp::Ordering;
 #[cfg(feature = "std")]
 use std::vec::Vec;
+#[cfg(feature = "std")]
+use std::default::Default;
+
 
 use curve25519_dalek::constants::RISTRETTO_BASEPOINT_TABLE;
 use curve25519_dalek::ristretto::CompressedRistretto;
@@ -78,7 +81,7 @@ impl PartialEq for Signer {
 
 /// A partially-constructed threshold signature, made by each participant in the
 /// signing protocol during the first phase of a signature creation.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Default)]
 pub struct PartialThresholdSignature {
     pub(crate) index: u32,
     pub(crate) z: Scalar,
