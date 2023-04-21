@@ -227,7 +227,7 @@ pub struct DealtParticipant {
 }
 
 /// A participant in a threshold signing.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Participant {
     /// The index of this participant, to keep the participants in order.
     pub index: u32,

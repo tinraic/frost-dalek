@@ -20,6 +20,7 @@ use sha2::Digest;
 use sha2::Sha512;
 
 use std::vec::Vec;
+use serde::{Serialize, Deserialize};
 
 /// A proof of knowledge of a secret key, created by making a Schnorr signature
 /// with the secret key.
@@ -35,7 +36,7 @@ use std::vec::Vec;
 /// where \\(A\_i = g^{a_i}\\), and using it to compute
 /// \\(s'\_i = \mathcal{H}(i, \phi, A\_i, M'\_i)\\), then finally
 /// \\(s\_i \stackrel{?}{=} s'\_i\\).
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct NizkOfSecretKey {
     /// The scalar portion of the Schnorr signature encoding the context.
     pub(crate) s: Scalar,
